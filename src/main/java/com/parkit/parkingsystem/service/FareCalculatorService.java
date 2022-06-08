@@ -2,12 +2,20 @@ package com.parkit.parkingsystem.service;
 
 import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.model.Ticket;
-import com.parkit.parkingsystem.dao.TicketDAO;
 
 //import com.parkit.parkingsystem.constants.*;
 //import com.parkit.parkingsystem.model.*;
 
 public class FareCalculatorService {
+
+//    public double getFare(double actualFare, boolean isDiscountApplicable){
+//        if(isDiscountApplicable){
+//          System.out.println("The discuount fare has been calculated");
+//          return  actualFare - (actualFare * 0.05);
+//        }else{
+//            return actualFare;
+//        }
+//    };
 
     public void calculateFare(Ticket ticket){
         if( (ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime())) ){
@@ -15,15 +23,6 @@ public class FareCalculatorService {
         }
 
         //Check if the ticket is eligble for discount
-
-        TicketDAO ticketDAO = new TicketDAO();
-        double discount = 0;
-       // int count = ticketDAO.getTicketHistory(ticket.getVehicleRegNumber());
-       // if (count>1){
-      //      discount =0.05;
-//
-     //   }
-
         @SuppressWarnings("deprecation")
 		long inHour = ticket.getInTime().getTime();
         @SuppressWarnings("deprecation")
@@ -31,18 +30,29 @@ public class FareCalculatorService {
 
         float duration = (float) (outHour - inHour)/3600000;
 
-
-
         switch (ticket.getParkingSpot().getParkingType()){
             case CAR: {
-                ticket.setPrice(duration * Fare.CAR_RATE_PER_HOUR);
+                if(duration < 0.5){
+                    ticket.setPrice(0);
+                }else{
+                    ticket.setPrice(duration * Fare.CAR_RATE_PER_HOUR);
+                }
                 break;
             }
             case BIKE: {
-                ticket.setPrice(duration * Fare.BIKE_RATE_PER_HOUR);
+                if(duration < 0.5){
+                    ticket.setPrice(0);
+                }else {
+                    ticket.setPrice(duration * Fare.BIKE_RATE_PER_HOUR);
+                }
                 break;
             }
             default: throw new IllegalArgumentException("Unkown Parking Type");
         }
+    }
+
+    public void calculateDiscountedFare(Ticket ticket){
+        calculateFare(ticket);
+        ticket.setPrice(ticket.getPrice() * 0.95);
     }
 }

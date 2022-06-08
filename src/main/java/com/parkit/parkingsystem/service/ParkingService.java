@@ -32,6 +32,11 @@ public class ParkingService {
             ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
             if(parkingSpot !=null && parkingSpot.getId() > 0){
                 String vehicleRegNumber = getVehichleRegNumber();
+//                Ticket checkPriorticket = ticketDAO.getTicket(vehicleRegNumber);
+//                if (checkPriorticket !=null){
+//                    System.out.println("Welcome back you will get 5% discount");
+//                }
+                //checks if it is a repeat customer
                 parkingSpot.setAvailable(false);
                 parkingSpotDAO.updateParking(parkingSpot);
                 //allot this parking space and mark it's availability as false
@@ -49,6 +54,7 @@ public class ParkingService {
                 System.out.println("Generated Ticket and saved in DB");
                 System.out.println("Please park your vehicle in spot number:"+parkingSpot.getId());
                 System.out.println("Recorded in-time for vehicle number:"+vehicleRegNumber+" is:"+inTime);
+          
             }
         }catch(Exception e){
             logger.error("Unable to process incoming vehicle",e);
@@ -60,10 +66,7 @@ public class ParkingService {
         //return inputReaderUtil.readVehicleRegistrationNumber();
         String vehicleRegNumber = inputReaderUtil.readVehicleRegistrationNumber();
 
-        Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
-        if (ticket !=null){
-            System.out.println("Welcome back you will get 5% discount");
-        }
+        
         return vehicleRegNumber;
     }
 
@@ -73,6 +76,7 @@ public class ParkingService {
         try{
             ParkingType parkingType = getVehichleType();
             parkingNumber = parkingSpotDAO.getNextAvailableSlot(parkingType);
+
             if(parkingNumber > 0){
                 parkingSpot = new ParkingSpot(parkingNumber,parkingType, true);
             }else{
@@ -110,8 +114,19 @@ public class ParkingService {
             String vehicleRegNumber = getVehichleRegNumber();
             Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
             Date outTime = new Date();
+            System.out.println("Setting the out time in ticket and ticket ID :" + ticket.getId());
             ticket.setOutTime(outTime);
-            fareCalculatorService.calculateFare(ticket);
+            int count = ticketDAO.getTicketHistory(vehicleRegNumber);
+            boolean isDiscountApplicable = false;
+            if (count>1){
+                isDiscountApplicable = true;
+                System.out.println("You qualify for discount");
+            }
+            if(isDiscountApplicable){
+                fareCalculatorService.calculateDiscountedFare(ticket);
+            }else{
+                fareCalculatorService.calculateFare(ticket);
+            }
             if(ticketDAO.updateTicket(ticket)) {
                 ParkingSpot parkingSpot = ticket.getParkingSpot();
                 parkingSpot.setAvailable(true);

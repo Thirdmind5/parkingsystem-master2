@@ -86,19 +86,46 @@ public class ParkingDataBaseIT {
     public void testParkingLotExit(){
         testParkingACar();
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        try{
+            Thread.sleep(1000);
+        }catch(Exception e){
+            System.out.println("Error");
+        }
         Date outTime = new Date();
         parkingService.processExitingVehicle();
         //TODO: check that the fare generated and out time are populated correctly in the database
 
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
 
-        System.out.println(ticket.getPrice() + "Price of ticket");
+        //System.out.println(ticket.getPrice() + "Price of ticket");
 
-        System.out.println(ticket.getOutTime().getMinutes() + " this is the outtime");
-        System.out.println(outTime.getMinutes() + " this is the time");
+        //System.out.println(ticket.getOutTime().getMinutes() + " this is the outtime");
+        //System.out.println(outTime.getMinutes() + " this is the time");
         assertEquals(ticket.getOutTime().getMinutes(), outTime.getMinutes());
-       // assertEquals(0,ticket.getPrice());
 
+        assertEquals(0,ticket.getPrice());
+
+    }
+
+    @Test
+    public void testParkingSpotStatus(){
+
+        testParkingACar();
+        //ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        //try{
+        //    Thread.sleep(1000);
+        //}catch(Exception e){
+        //    System.out.println("Error");
+        //}
+        //Date outTime = new Date();
+        //parkingService.processExitingVehicle();
+        //TODO: check that the fare generated and out time are populated correctly in the database
+
+        //Ticket ticket = ticketDAO.getTicket("ABCDEF");
+
+        boolean result = parkingSpotDAO.getParkingSportStatus(6);
+        System.out.println("The result " + result);
+        assertEquals(false,result);
 
 
     }

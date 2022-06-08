@@ -139,6 +139,18 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>com/parkit/**/DataBaseConfig.class</exclude>
+                        <exclude>com/parkit/**/DBConstants.class</exclude>
+                        <!-- <exclude>com/parkit/**/Fare.class</exclude>-->
+
+                         <exclude>com/parkit/**/InputReaderUtil.class</exclude>
+                         <exclude>com/parkit/**/InteractiveShell.class</exclude>
+                         <exclude>com/parkit/**/App.class</exclude>
+                         <!--<exclude>com/parkit/**/TicketDAO.class</exclude>-->
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
