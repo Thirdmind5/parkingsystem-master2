@@ -60,7 +60,7 @@ public class ParkingSpotDAO {
         }
     }
 
-    public boolean getParkingSportStatus(int parkingSpotNumber) {
+    public boolean getParkingSpotStatus(int parkingSpotNumber) {
         Connection con = null;
         boolean result = false;
 

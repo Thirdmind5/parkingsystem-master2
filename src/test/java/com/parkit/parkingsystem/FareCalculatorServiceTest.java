@@ -164,7 +164,7 @@ public class FareCalculatorServiceTest {
         ticket.setInTime(inTime);
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
-        fareCalculatorService.calculateDiscountedFare(ticket);
+        fareCalculatorService.calculateFare(ticket);
         assertEquals( (1 * Fare.CAR_RATE_PER_HOUR * 0.95) , ticket.getPrice());
     }
 
@@ -219,6 +219,7 @@ public class FareCalculatorServiceTest {
 
     @Test
     public void clearDatabaseService() throws Exception{
+
         dataBasePrepareService = new DataBasePrepareService();
         dataBasePrepareService.clearDataBaseEntries();
     }

@@ -51,16 +51,11 @@ public class ParkingServiceTest {
         //this object to clear the ticket table and sets all parking as available in parking table
     }
 
-
-
-
-
     @BeforeEach
     private void setUpPerTest() {
         try {
 
-            when(inputReaderUtil.readSelection()).thenReturn(1);
-            when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("EFEF");
+
            // when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
 
             ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
@@ -83,6 +78,14 @@ public class ParkingServiceTest {
 
     @Test
       public void processIncomingCarTest(){
+        try {
+            when(inputReaderUtil.readSelection()).thenReturn(1);
+            when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("EFEF");
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            throw  new RuntimeException("Failed to set up test mock objects");
+        }
         System.out.println("Inside test case");
        parkingService.processIncomingVehicle();
         assertNotNull(ticketDAO.getTicketHistory("EFEF"));

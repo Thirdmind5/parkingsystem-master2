@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -63,27 +64,18 @@ public class ParkingDataBaseIT {
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
         parkingService.processIncomingVehicle();
         //TODO: check that a ticket is actualy saved in DB and Parking table is updated with availability
-
         //1. First check if a ticket with car registration "ABCDEF" is in the tickets table
-
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
         assert ticket != null;
-
-        //2. I need to get the status of the parking spot 1 and see if it unavilable
+        //2. I need to get the status of the parking spot 1 and see if it unavailable
         ParkingSpot parkingSpot = ticket.getParkingSpot();
-
         int parkingSpotNumber = parkingSpot.getId();
-
-        //Test code to see to check if we are getting correct parking spot status
-        // System.out.println("The parking spot Number is: " + parkingSpotNumber);
-        //System.out.println("The parking spot status for 1 is " + parkingSpotDAO.getParkingSportStatus(parkingSpotNumber));
-        // System.out.println("The parking spot status for 2 is " + parkingSpotDAO.getParkingSportStatus(2));
-
-        assert !parkingSpotDAO.getParkingSportStatus(parkingSpotNumber);
+        assertFalse (parkingSpotDAO.getParkingSpotStatus(parkingSpotNumber));
     }
 
     @Test
     public void testParkingLotExit(){
+        //park a car -mock will use ABCDEF as the reg number
         testParkingACar();
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
         try{
@@ -92,41 +84,29 @@ public class ParkingDataBaseIT {
             System.out.println("Error");
         }
         Date outTime = new Date();
+        //exit the car - mock will use ABCDEF as the reg number
         parkingService.processExitingVehicle();
         //TODO: check that the fare generated and out time are populated correctly in the database
-
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
-
-        //System.out.println(ticket.getPrice() + "Price of ticket");
-
-        //System.out.println(ticket.getOutTime().getMinutes() + " this is the outtime");
-        //System.out.println(outTime.getMinutes() + " this is the time");
+        //checks if the exit time is correct
         assertEquals(ticket.getOutTime().getMinutes(), outTime.getMinutes());
-
+        //checks if the fare is correct
         assertEquals(0,ticket.getPrice());
-
     }
 
+
+    //this is an extra one I have added
     @Test
     public void testParkingSpotStatus(){
-
+        //Checks if the ParkingSpotStatus is working fine
+        //first park a car - mock will use ABCDEF as the reg number
         testParkingACar();
-        //ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-        //try{
-        //    Thread.sleep(1000);
-        //}catch(Exception e){
-        //    System.out.println("Error");
-        //}
-        //Date outTime = new Date();
-        //parkingService.processExitingVehicle();
-        //TODO: check that the fare generated and out time are populated correctly in the database
-
-        //Ticket ticket = ticketDAO.getTicket("ABCDEF");
-
-        boolean result = parkingSpotDAO.getParkingSportStatus(6);
+        Ticket ticket = ticketDAO.getTicket("ABCDEF");
+        ParkingSpot parkingSpot = ticket.getParkingSpot();
+        int parkingSpotNumber = parkingSpot.getId();
+        boolean result = parkingSpotDAO.getParkingSpotStatus(parkingSpotNumber);
         System.out.println("The result " + result);
         assertEquals(false,result);
-
 
     }
 

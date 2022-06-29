@@ -32,10 +32,10 @@ public class ParkingService {
             ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
             if(parkingSpot !=null && parkingSpot.getId() > 0){
                 String vehicleRegNumber = getVehichleRegNumber();
-//                Ticket checkPriorticket = ticketDAO.getTicket(vehicleRegNumber);
-//                if (checkPriorticket !=null){
-//                    System.out.println("Welcome back you will get 5% discount");
-//                }
+                Ticket checkPriorticket = ticketDAO.getTicket(vehicleRegNumber);
+                if (checkPriorticket !=null){
+                    System.out.println("Welcome back you will get 5% discount");
+                }
                 //checks if it is a repeat customer
                 parkingSpot.setAvailable(false);
                 parkingSpotDAO.updateParking(parkingSpot);
@@ -122,11 +122,11 @@ public class ParkingService {
                 isDiscountApplicable = true;
                 System.out.println("You qualify for discount");
             }
-            if(isDiscountApplicable){
-                fareCalculatorService.calculateDiscountedFare(ticket);
-            }else{
-                fareCalculatorService.calculateFare(ticket);
-            }
+            //if(isDiscountApplicable){
+            //    fareCalculatorService.calculateDiscountedFare(ticket);
+           // }else{
+            fareCalculatorService.calculateFare(ticket);
+           // }
             if(ticketDAO.updateTicket(ticket)) {
                 ParkingSpot parkingSpot = ticket.getParkingSpot();
                 parkingSpot.setAvailable(true);
