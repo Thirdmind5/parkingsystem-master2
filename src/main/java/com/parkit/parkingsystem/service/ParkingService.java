@@ -15,8 +15,6 @@ public class ParkingService {
 
     private static final Logger logger = LogManager.getLogger("ParkingService");
 
-    private static FareCalculatorService fareCalculatorService = new FareCalculatorService();
-
     private InputReaderUtil inputReaderUtil;
     private ParkingSpotDAO parkingSpotDAO;
     private  TicketDAO ticketDAO;
@@ -117,16 +115,14 @@ public class ParkingService {
             System.out.println("Setting the out time in ticket and ticket ID :" + ticket.getId());
             ticket.setOutTime(outTime);
             int count = ticketDAO.getTicketHistory(vehicleRegNumber);
+            System.out.println( "In Process Exiting Vehicle method Count = " + count);
             boolean isDiscountApplicable = false;
             if (count>1){
                 isDiscountApplicable = true;
                 System.out.println("You qualify for discount");
             }
-            //if(isDiscountApplicable){
-            //    fareCalculatorService.calculateDiscountedFare(ticket);
-           // }else{
+            FareCalculatorService fareCalculatorService = new FareCalculatorService(this.ticketDAO);
             fareCalculatorService.calculateFare(ticket);
-           // }
             if(ticketDAO.updateTicket(ticket)) {
                 ParkingSpot parkingSpot = ticket.getParkingSpot();
                 parkingSpot.setAvailable(true);

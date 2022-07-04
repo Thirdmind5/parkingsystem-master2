@@ -97,13 +97,13 @@ public class TicketDAO {
             //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
             ps.setString(1,vehicleRegNumber);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()){
-                count++;
-            }
+            rs.last();
+            count= rs.getRow();
+            System.out.println("In getTicketHistory Method Count =" + count);
             dataBaseConfig.closeResultSet(rs);
             dataBaseConfig.closePreparedStatement(ps);
         }catch (Exception ex){
-            logger.error("Error fetching next available slot",ex);
+            logger.error("Error fetching next ticket history",ex);
         }finally {
             dataBaseConfig.closeConnection(con);
             return count;
