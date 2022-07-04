@@ -18,9 +18,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Date;
+
+import static java.lang.Float.parseFloat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 @ExtendWith(MockitoExtension.class)
 public class FareCalculatorServiceTest {
@@ -146,7 +150,7 @@ public class FareCalculatorServiceTest {
     }
 
     @Test
-    public void testSandBox() throws Exception {
+    public void testDiscountedFair() throws Exception {
 
         when(inputReaderUtil.readSelection()).thenReturn(1);
         when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("DDDD");
@@ -178,6 +182,9 @@ public class FareCalculatorServiceTest {
         Ticket ticketNew = ticketDAO.getTicket("DDDD");
         ticketNew.setInTime(inTime);
         fareCalculatorService.calculateFare(ticketNew);
-        assert(2.85 - ticketNew.getPrice() <0.1);
+        final DecimalFormat df = new DecimalFormat("0.00");
+        //assert(2.85 - ticketNew.getPrice() <0.1);
+        String s = "2.85";
+        assertEquals(s, df.format(ticketNew.getPrice()));
     }
 }

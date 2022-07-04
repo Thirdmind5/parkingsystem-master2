@@ -99,7 +99,6 @@ public class TicketDAO {
             ResultSet rs = ps.executeQuery();
             rs.last();
             count= rs.getRow();
-            System.out.println("In getTicketHistory Method Count =" + count);
             dataBaseConfig.closeResultSet(rs);
             dataBaseConfig.closePreparedStatement(ps);
         }catch (Exception ex){

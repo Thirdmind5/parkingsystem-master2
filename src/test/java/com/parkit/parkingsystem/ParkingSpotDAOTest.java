@@ -47,7 +47,6 @@ public class ParkingSpotDAOTest {
 
     @BeforeEach
     private void setUpPerTest() throws Exception {
-
         dataBasePrepareService.clearDataBaseEntries();
     }
 
@@ -58,33 +57,23 @@ public class ParkingSpotDAOTest {
 
     @Test
     public void testParkingSpotStatus(){
-
         boolean result = parkingSpotDAO.getParkingSpotStatus(6);
         System.out.println("The result " + result);
         assertEquals(false,result);
-
     }
+
     @Test
     public void testUpdateParking(){
         //UpdateParking spot only frees the spot
-        //I first need to use a spot, check if it is available and make sure it is not
+        //First need to use a spot, check if it is available and make sure it is not
         //then use the UpdateParking to free it up
-
         ParkingType parkingType = ParkingType.CAR;
-
         int parkingSpotNum = parkingSpotDAO.getNextAvailableSlot(parkingType);
-
         System.out.println(parkingSpotNum);
-
         assertEquals(1,parkingSpotNum);
-
         //we now know that parking spot 1 is taken
-        //paring spot 1 needs to be made avaiable using UpdateParking
-
+        //parking spot 1 needs to be made avaiable using UpdateParking
         ParkingSpot parkingSpot = new ParkingSpot(1,ParkingType.CAR,false);
-
         assertEquals(true,parkingSpotDAO.updateParking(parkingSpot));
-
     }
-
 }

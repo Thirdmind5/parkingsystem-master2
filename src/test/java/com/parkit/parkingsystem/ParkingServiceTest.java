@@ -91,18 +91,4 @@ public class ParkingServiceTest {
         assertNotNull(ticketDAO.getTicketHistory("EFEF"));
         assertEquals(2,parkingService.getNextParkingNumberIfAvailable().getId());
     }
-
-
-
-    //public void processIncomingBikeTest(){}
-    //processIncomingVehicelWithNoSpotsAvailable
-    //
-    @Test
-    public void processExitingVehicleTest(){
-//        parkingService.processExitingVehicle();
-//        verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
-
-    }
-
-
 }
