@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Date;
 
@@ -26,8 +27,9 @@ import static org.mockito.Mockito.when;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
+
 @ExtendWith(MockitoExtension.class)
-public class FareCalculatorServiceTest {
+public class  FareCalculatorServiceTest {
 
     private static DataBaseTestConfig dataBaseTestConfig = new DataBaseTestConfig();
     private static FareCalculatorService fareCalculatorService;
@@ -38,6 +40,7 @@ public class FareCalculatorServiceTest {
 
     @Mock
     private static InputReaderUtil inputReaderUtil;
+
 
     @BeforeAll
     private static void setUp() {
@@ -149,42 +152,160 @@ public class FareCalculatorServiceTest {
         assertEquals((24 * Fare.CAR_RATE_PER_HOUR), ticket.getPrice());
     }
 
+//    @Test
+//    public void testDiscountedFare() throws Exception {
+//
+//        when(inputReaderUtil.readSelection()).thenReturn(1);
+//        when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("DDDD");
+//        parkingSpotDAO = new ParkingSpotDAO();
+//        parkingSpotDAO.dataBaseConfig = dataBaseTestConfig;
+//        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+//
+//        parkingService.processIncomingVehicle();
+//        try {
+//            Thread.sleep(1000);
+//        } catch (Exception e) {
+//            System.out.println("Error");
+//        }
+//        parkingService.processExitingVehicle(); //now the vehicle "DDDD" has been parked and exited
+//        try {
+//            Thread.sleep(1000);
+//        } catch (Exception e) {
+//            System.out.println("Error");
+//        }
+//        parkingService.processIncomingVehicle();//parking "DDDD" second time
+//        try {
+//            Thread.sleep(1000);
+//        } catch (Exception e) {
+//            System.out.println("Error");
+//        }
+//        parkingService.processExitingVehicle();//now the vehicle "DDDD" is twice in the DB
+//        Date inTime = new Date();
+//        inTime.setTime(System.currentTimeMillis() - (2 * 60 * 60 * 1000)); //two hours parking
+//        Ticket ticketNew = ticketDAO.getTicket("DDDD");
+//        ticketNew.setInTime(inTime);
+//        fareCalculatorService.calculateFare(ticketNew);
+//        final DecimalFormat df = new DecimalFormat("0.00");
+//        //assert(2.85 - ticketNew.getPrice() <0.1);
+//        String s = "2.85";
+//        assertEquals(s, df.format(ticketNew.getPrice()));
+//    }
+
     @Test
-    public void testDiscountedFair() throws Exception {
+    public void testDiscountedFareCar2() throws Exception {
 
-        when(inputReaderUtil.readSelection()).thenReturn(1);
-        when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("DDDD");
-        parkingSpotDAO = new ParkingSpotDAO();
-        parkingSpotDAO.dataBaseConfig = dataBaseTestConfig;
-        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        TicketDAO ticketDAO = Mockito.mock(TicketDAO.class);
+        when(ticketDAO.getTicketHistory("DDDD")).thenReturn(3);
+        FareCalculatorService fareCalculatorService1 = new FareCalculatorService(ticketDAO);
 
-        parkingService.processIncomingVehicle();
-        try {
-            Thread.sleep(1000);
-        } catch (Exception e) {
-            System.out.println("Error");
-        }
-        parkingService.processExitingVehicle(); //now the vehicle "DDDD" has been parked and exited
-        try {
-            Thread.sleep(1000);
-        } catch (Exception e) {
-            System.out.println("Error");
-        }
-        parkingService.processIncomingVehicle();//parking "DDDD" second time
-        try {
-            Thread.sleep(1000);
-        } catch (Exception e) {
-            System.out.println("Error");
-        }
-        parkingService.processExitingVehicle();//now the vehicle "DDDD" is twice in the DB
+        ticket.setVehicleRegNumber("DDDD");
+        ParkingSpot parkingSpot = new ParkingSpot(1,ParkingType.CAR,false);
+
         Date inTime = new Date();
-        inTime.setTime(System.currentTimeMillis() - (2 * 60 * 60 * 1000)); //two hours parking
-        Ticket ticketNew = ticketDAO.getTicket("DDDD");
+        inTime.setTime(System.currentTimeMillis() - (2 *60 * 60 * 1000)); //two hours parking
+        Ticket ticketNew = new Ticket();
         ticketNew.setInTime(inTime);
+        Date now = new Date();
+        ticketNew.setOutTime(now);
+        ticketNew.setParkingSpot(parkingSpot);
+        ticketNew.setVehicleRegNumber("DDDD");
+        fareCalculatorService1.calculateFare(ticketNew);
+        final DecimalFormat df = new DecimalFormat("0.00");
+        assertEquals(2.85, ticketNew.getPrice());
+
+    }
+
+
+    @Test
+    public void testDiscountedFareBike2() throws Exception {
+
+        TicketDAO ticketDAO = Mockito.mock(TicketDAO.class);
+        when(ticketDAO.getTicketHistory("DDDD")).thenReturn(3);
+        FareCalculatorService fareCalculatorService1 = new FareCalculatorService(ticketDAO);
+
+        ticket.setVehicleRegNumber("DDDD");
+        ParkingSpot parkingSpot = new ParkingSpot(1,ParkingType.BIKE,false);
+
+        Date inTime = new Date();
+        inTime.setTime(System.currentTimeMillis() - (2 *60 * 60 * 1000)); //two hours parking
+        Ticket ticketNew = new Ticket();
+        ticketNew.setInTime(inTime);
+        Date now = new Date();
+        ticketNew.setOutTime(now);
+        ticketNew.setParkingSpot(parkingSpot);
+        ticketNew.setVehicleRegNumber("DDDD");
+        fareCalculatorService1.calculateFare(ticketNew);
+        final DecimalFormat df = new DecimalFormat("0.00");
+        assertEquals(1.9, ticketNew.getPrice());
+
+    }
+
+//    @Test
+//    public void testLessThan30MinDisount() throws Exception {
+//
+//        when(inputReaderUtil.readSelection()).thenReturn(1);
+//        when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("DDDD");
+//        parkingSpotDAO = new ParkingSpotDAO();
+//        parkingSpotDAO.dataBaseConfig = dataBaseTestConfig;
+//        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+//
+//       parkingService.processIncomingVehicle();
+//        try {
+//            Thread.sleep(1000);
+//        } catch (Exception e) {
+//            System.out.println("Error");
+//        }
+//       parkingService.processExitingVehicle();
+//
+//        Date inTime = new Date();
+//        inTime.setTime(System.currentTimeMillis() - (29 * 60 * 1000)); //two hours parking
+//        Ticket ticketNew = ticketDAO.getTicket("DDDD");
+//        ticketNew.setInTime(inTime);
+//
+//        fareCalculatorService.calculateFare(ticketNew);
+//        final DecimalFormat df = new DecimalFormat("0.00");
+//        //assert(2.85 - ticketNew.getPrice() <0.1);
+//        //String s = "2.85";
+//        assertEquals(0, ticketNew.getPrice());
+//    }
+
+    @Test
+    public void testLessThan30MinDisountCar2() throws Exception {
+       TicketDAO ticketDAO2 = Mockito.mock(TicketDAO.class);
+       when(ticketDAO2.getTicket("DDDD")).thenReturn(ticket);
+       ticket.setVehicleRegNumber("DDDD");
+       ParkingSpot parkingSpot = new ParkingSpot(1,ParkingType.CAR,false);
+
+       Date inTime = new Date();
+       inTime.setTime(System.currentTimeMillis() - (29 * 60 * 1000)); //two hours parking
+        Ticket ticketNew = ticketDAO2.getTicket("DDDD");
+        ticketNew.setInTime(inTime);
+        Date now = new Date();
+        ticketNew.setOutTime(now);
+        ticketNew.setParkingSpot(parkingSpot);
         fareCalculatorService.calculateFare(ticketNew);
         final DecimalFormat df = new DecimalFormat("0.00");
-        //assert(2.85 - ticketNew.getPrice() <0.1);
-        String s = "2.85";
-        assertEquals(s, df.format(ticketNew.getPrice()));
+        assertEquals(0, ticketNew.getPrice());
     }
+
+    @Test
+    public void testLessThan30MinDisountBike2() throws Exception {
+        TicketDAO ticketDAO2 = Mockito.mock(TicketDAO.class);
+        when(ticketDAO2.getTicket("DDDD")).thenReturn(ticket);
+        ticket.setVehicleRegNumber("DDDD");
+        ParkingSpot parkingSpot = new ParkingSpot(1,ParkingType.BIKE,false);
+
+        Date inTime = new Date();
+        inTime.setTime(System.currentTimeMillis() - (29 * 60 * 1000)); //two hours parking
+        Ticket ticketNew = ticketDAO2.getTicket("DDDD");
+        ticketNew.setInTime(inTime);
+        Date now = new Date();
+        ticketNew.setOutTime(now);
+        ticketNew.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticketNew);
+        final DecimalFormat df = new DecimalFormat("0.00");
+        assertEquals(0, ticketNew.getPrice());
+    }
+
+
 }

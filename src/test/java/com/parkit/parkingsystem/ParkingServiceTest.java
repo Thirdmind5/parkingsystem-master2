@@ -54,23 +54,14 @@ public class ParkingServiceTest {
     @BeforeEach
     private void setUpPerTest() {
         try {
-
-
-           // when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
-
             ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
             Ticket ticket = new Ticket();
             ticket.setInTime(new Date(System.currentTimeMillis() - (60*60*1000)));
             ticket.setParkingSpot(parkingSpot);
             ticket.setVehicleRegNumber("ABCDEF");
-          //  when(ticketDAO.getTicket(anyString())).thenReturn(ticket);
-           // when(ticketDAO.updateTicket(any(Ticket.class))).thenReturn(true);
-
-            //when(parkingSpotDAO.updateParking(any(ParkingSpot.class))).thenReturn(true);
             dataBasePrepareService.clearDataBaseEntries();
             parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
         } catch (Exception e) {
-
             e.printStackTrace();
             throw  new RuntimeException("Failed to set up test mock objects");
         }
@@ -86,9 +77,22 @@ public class ParkingServiceTest {
             e.printStackTrace();
             throw  new RuntimeException("Failed to set up test mock objects");
         }
-        System.out.println("Inside test case");
        parkingService.processIncomingVehicle();
         assertNotNull(ticketDAO.getTicketHistory("EFEF"));
         assertEquals(2,parkingService.getNextParkingNumberIfAvailable().getId());
+    }
+
+    @Test
+    public void processExitingCarTest(){
+        try {
+            when(inputReaderUtil.readSelection()).thenReturn(1);
+            when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("EFEF");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw  new RuntimeException("Failed to set up test mock objects");
+        }
+        parkingService.processIncomingVehicle();
+        parkingService.processExitingVehicle();
+        assertEquals(1,parkingService.getNextParkingNumberIfAvailable().getId());
     }
 }
